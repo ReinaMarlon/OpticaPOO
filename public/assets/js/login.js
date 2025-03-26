@@ -11,6 +11,15 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
         return;
     }
 
+    Swal.fire({
+        title: 'Procesando',
+        text: 'Verificando credenciales...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     fetch("../src/controllers/sessionValidate.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -19,10 +28,30 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.location.href = data.redirect;
+            Swal.fire({
+                icon: 'success',
+                title: '¡Bienvenido!',
+                text: 'Iniciando sesión...',
+                timer: 1200,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = data.redirect;
+            });
         } else {
-            errorMsg.textContent = data.message;
-            errorMsg.style.display = "block";
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message,
+                confirmButtonColor: '#3085d6'
+            });
         }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Credenciales incorrectas',
+            confirmButtonColor: '#3085d6'
+        });
     });
 });

@@ -1,3 +1,4 @@
+DROP DATABASE optica_poo;
 CREATE DATABASE IF NOT EXISTS optica_poo DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;
 
 USE optica_poo;
@@ -13,7 +14,7 @@ CREATE TABLE IF NOT EXISTS tbl_roles (
 CREATE TABLE IF NOT EXISTS tbl_users (
     idUsers INT PRIMARY KEY NOT NULL,
     nombreUsuario VARCHAR(250) NOT NULL,
-    nombreContrasena VARCHAR(25) NOT NULL,
+    nombreContrasena VARCHAR(255) NOT NULL,
     idRol INT NULL,
     CONSTRAINT fk_rol FOREIGN KEY (idRol) REFERENCES tbl_roles (idRoles) ON UPDATE CASCADE ON DELETE SET NULL
 );
@@ -79,26 +80,6 @@ VALUES (1, 'Administrador'),
     (3, 'Instructor'),
     (4, 'Estudiante');
 
-INSERT INTO
-    tbl_users (
-        idUsers,
-        nombreUsuario,
-        nombreContrasena,
-        idRol
-    )
-VALUES (
-        12345,
-        "marlonReina",
-        "marlon123",
-        1
-    ),
-    (
-        62334,
-        "alejandroCeron",
-        "alejanro123",
-        2
-    );
-
 DELIMITER $$
 
 CREATE TRIGGER after_user_insert
@@ -109,7 +90,7 @@ BEGIN
     VALUES (NEW.nombreUsuario, NEW.nombreContrasena, NEW.idRol);
 END$$
 
-DELIMITER;
+delimiter ;
 
 DELIMITER $$
 
@@ -122,6 +103,7 @@ BEGIN
     DECLARE v_nombreContrasena VARCHAR(100);
     DECLARE v_idRol INT;
     DECLARE v_rolNombre VARCHAR(50);
+
 
     -- Cursor para recorrer los usuarios pendientes
     DECLARE cur CURSOR FOR 
@@ -163,7 +145,7 @@ BEGIN
     CLOSE cur;
 END$$
 
-DELIMITER;
+delimiter ;
 
 -- TRIGGER AFTER INSERT
 DELIMITER $$
@@ -177,7 +159,7 @@ BEGIN
             CONCAT('Se agregó el elemento "', NEW.nombreElemento, '" con cantidad "', NEW.cantidad, '".'));
 END$$
 
-DELIMITER;
+delimiter ;
 
 --TRIGGER AFTER UPDATE
 DELIMITER $$
@@ -222,7 +204,7 @@ BEGIN
     VALUES (UUID(), USER(), 'tbl_elementos', 'Modificado', NOW(), descripcion_texto, query_texto, OLD.idElemento);
 END$$
 
-DELIMITER;
+delimiter ;
 
 -- TRIGGER AFTER DELETE
 DELIMITER / /
@@ -260,4 +242,24 @@ BEGIN
     );
 END //
 
-DELIMITER;
+delimiter ;
+
+INSERT INTO
+    tbl_users (
+        idUsers,
+        nombreUsuario,
+        nombreContrasena,
+        idRol
+    )
+VALUES (
+        12345,
+        "marlonReina",
+        "marlon123",
+        1
+    ),
+    (
+        62334,
+        "alejandroCeron",
+        "alejanro123",
+        2
+    );
