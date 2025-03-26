@@ -15,15 +15,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $auth = new Auth($username, $userpassword);
 
-    $conn = new Conn($auth->getUsername(), $auth->getPassword());
+    $conn = Conn::getInstance($auth->getUsername(), $auth->getPassword());
+    
+    if (!$conn->getConnect()) {
+        echo json_encode(["success" => false, "message" => "Error de conexión: " . $conn->getError()]);
+        exit;
+    }
+    
     $validate = $conn->getAuthUserData();
-    if($conn){
+    
+    if($validate) {
         $user = new User($validate['idUsers'], $validate['nombreUsuario'], $validate['idRol']);
-        echo json_encode(["success" => true, "redirect" => "dashboard.php"]);
         $_SESSION['UserID'] = $user->getUserID();
         $_SESSION['Username'] = $user->getUsername();
+        $_SESSION['uPass'] = $auth->getPassword();
         $_SESSION['UserRolID'] = $user->getRolID();
+        echo json_encode(["success" => true, "redirect" => "dashboard.php"]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Usuario o contraseña incorrectos"]);
     }
-
-    
+} else {
+    echo json_encode(["success" => false, "message" => "Método de solicitud no válido"]);
 }
